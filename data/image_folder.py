@@ -15,7 +15,6 @@ IMG_EXTENSIONS = [
     '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
 ]
 
-
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
@@ -24,11 +23,17 @@ def make_dataset(dir, max_dataset_size=float("inf")):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
 
-    for root, _, fnames in sorted(os.walk(dir)):
-        for fname in fnames:
-            if is_image_file(fname):
-                path = os.path.join(root, fname)
-                images.append(path)
+    for filename in os.listdir(dir):
+        filename = os.path.join(dir, filename)
+        dir_name, ext = os.path.splitext(filename)
+        dir_name += '\\'
+        if ext == '.txt':
+            with open(filename, 'r') as f:
+                lines = f.readlines()
+                for line in lines:
+                    full_imagepath = os.path.join(dir_name, line)
+                    images.append(full_imagepath)
+
     return images[:min(max_dataset_size, len(images))]
 
 
